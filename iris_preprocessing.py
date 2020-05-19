@@ -152,3 +152,26 @@ while True:
 
 cv.DestroyAllWindows()
 
+# hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    # cv2.imshow('hsv', hsv)
+    # l_b = np.array([110,50,50])
+    # u_b = np.array([130,255,255])
+    # pupil_img_ranged = cv2.inRange(
+    #     gray,l_b, u_b)
+    # cv2.imshow('pupilaaaa', pupil_img_ranged)
+    # contours, _ = cv2.findContours(
+    #     pupil_img_ranged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # del pupil_img
+    # pupil_img = frame.copy()
+    # for i in contours:
+    #     moments = cv2.moments(i)
+    #     area = moments['m00']
+    #     if (area > 50):
+    #         pupilArea = area
+    #         x = moments['m10']/area
+    #         y = moments['m10']/area
+    #         global centroid
+    #         centroid = (int(x), int(y))
+    #         cv2.drawContours(pupil_img, i, -1,
+    #                          (0, 0, 0), 2, cv2.FILLED)
+    #         break
