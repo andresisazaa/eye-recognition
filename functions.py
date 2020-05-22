@@ -42,20 +42,13 @@ def getPupil(frame):
 def getCircles(image):
     i=80
     output = image.copy()
-    # while i < 150:
-    circles = cv2.HoughCircles(image, cv2.HOUGH_GRADIENT,1,20, param1=50, param2=30, minRadius=0, maxRadius=0)
+    circles = cv2.HoughCircles(image, cv2.HOUGH_GRADIENT,1,0.01, param1=250, param2=60, minRadius=0, maxRadius=0)
     detected_circles = np.uint16(np.around(circles))
+    print('detected circles', detected_circles.size)
     for (x,y,r) in detected_circles[0, :]:
         cv2.circle(output, (x,y), r, (0,255,0),3)
         cv2.circle(output, (x,y), 2, (0,255,255),3)
-    cv2.imshow('output', output) 
-        # print(f'Circlessss {circles}')
-        # print('len',len(circles))
-        # if (len(circles) > 1):
-              
-        #     return circles[0]
-        # i += 1
-    return ([])
+    return (circles)
 
 
 # Returns the cropped image with the isolated iris and black-painted
@@ -72,16 +65,15 @@ def getIris(frame):
     # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # cv2.Canny(grayImg, grayImg, 5, 70, 3)
     gray= cv2.Canny(frame, 350,5)
-    cv2.imshow('Canny', gray)
     # cv2.Smooth(grayImg, grayImg, cv2.CV_GAUSSIAN, 7, 7)
-    gray = cv2.GaussianBlur(gray, (7, 7), cv2.BORDER_ISOLATED)
-    cv2.imshow('Gaussian Blur', gray)
+    gray = cv2.GaussianBlur(gray, (3, 3), cv2.BORDER_ISOLATED)
+    # cv2.imshow('Gaussian Blur', gray)
     # #print(f'GRAY IMG {grayImg}')
     # cv2.imshow('imagen que le pasa a circles', grayImg)
     circles = getCircles(gray)
     # iris.append(resImg)
     # for circle in circles:
-    #     rad = int(circle[0][2])
+    #     rad = 
     #     global radius
     #     radius = rad
     #     # cv2.Circle(mask, centroid, rad, cv2.CV_RGB(
@@ -104,6 +96,14 @@ def getIris(frame):
     #     return(cropImg)
     return (gray)
 
+def getPolar2CartImg(image):
+	height, width, channels = frame.shape
+	c = (float(height/2.0), float(width/2.0))
+    # c = (381,278)
+    # imgRes = np.zeros((70*3, int(360)), 8, 3)
+	imgRes = cv2.logPolar(image,c,40,cv2.INTER_LINEAR+cv2.WARP_FILL_OUTLIERS)
+	# imgRes = cv2.warpPolar(image,90,c,90,cv2.INTER_LINEAR+cv2.WARP_FILL_OUTLIERS)
+	return (imgRes)
 
 frame = cv2.imread("022L_3.png")
 # print(frame)
@@ -111,8 +111,9 @@ iris = copy.copy(frame)
 pupil = getPupil(frame)
 # print(f'FRAME {frame}')
 # print(f'PUPIL {pupil}')
-iris = getCircles(pupil)
-# cv2.imshow('pupil', pupil)
+iris = getIris(pupil)
+polar = getPolar2CartImg(frame)
+cv2.imshow('polar', polar)
 # cv2.imshow('iris', iris)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
