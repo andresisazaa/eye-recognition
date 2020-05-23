@@ -1,6 +1,11 @@
 import cv2  # Not actually necessary if you just want to create an image.
 import numpy as np
 import copy
+import tkinter as tk
+from PIL import Image
+from PIL import ImageTk
+from tkinter import filedialog
+
 # Holds the pupil's center
 centroid = (0, 0)
 # Holds the iris' radius
@@ -10,8 +15,6 @@ currentEye = 0
 # Holds the list of eyes (filenames)
 eyesList = []
 #####################################
-
-
 
 def getPupil(frame):
     dimensions = frame.shape
@@ -70,14 +73,49 @@ def getPolar2CartImage(image):
     imgRes = cv2.addWeighted(imgRes, 1.3, np.zeros(imgRes.shape, imgRes.dtype), 0, 0)
     return (imgRes)
 
+def select_image():
+    global imageA, imageB
+    path = filedialog.askopenfilename()
+    if len(path) > 0:
+        frame = cv2.imread(path)
+        iris = copy.copy(frame)
+        pupil = getPupil(frame)
+        iris = getIris(pupil)
+        polar = getPolar2CartImage(iris)
+        #To Pil format
+        frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        frame = Image.fromarray(frame)
+        polar = Image.fromarray(polar)
+        #To Imagetk format
+        frame = ImageTk.PhotoImage(frame)
+        polar = ImageTk.PhotoImage(polar)
+        if imageA is None or imageB is None:
+            imageA = tk.Label(image=frame)
+            imageA.image = frame
+            imageA.pack(side="left", padx=3, pady=3)
+            imageB = tk.Label(image=polar)
+            imageB.image = polar
+            imageB.pack(side="right", padx=3, pady=3)
+        else:
+            imageA.configure(image=frame)
+            imageB.configure(image=polar)
+            imageA.image = frame
+            imageB.image = polar
 
 
-frame = cv2.imread("022L_3.png")
-iris = copy.copy(frame)
-pupil = getPupil(frame)
-iris = getIris(pupil)
-cv2.imshow('iris', iris)
-polar = getPolar2CartImage(iris)
-cv2.imshow('polar', polar)
+root = tk.Tk()
+root.geometry("1500x800")
+imageA = None
+imageB = None
+# create a button, then when pressed, will trigger a file chooser
+# dialog and allow the user to select an input image; then add the
+# button the GUI
+btn = tk.Button(root, text="Select an image", command= select_image)
+btn.pack(side="bottom", fill="both", expand="yes", padx="5", pady="5")
+# btn.pack(side="bottom", fill="both", expand="yes", padx="10", pady="10")
+# kick off the GUI
+root.mainloop()
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+
