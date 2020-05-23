@@ -12,14 +12,6 @@ eyesList = []
 #####################################
 
 
-# blank_image = np.zeros((height,width,3), np.uint8)
-
-# img = np.ones((300, 300, 1), np.uint8)*255
-# cv2.imshow('image', img)
-# print(np.shape(img))
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
-
 
 def getPupil(frame):
     dimensions = frame.shape
@@ -31,6 +23,7 @@ def getPupil(frame):
         moments = cv2.moments(i)
         area = moments['m00']        
         if ((area > 7000) & (area < 30000)):
+            print('area',area)
             x = moments['m10']/area
             y = moments['m10']/area
             global centroid
@@ -61,59 +54,30 @@ def getCircles(image):
 
 
 def getIris(frame):
-    # iris = []
-    # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    # cv2.Canny(grayImg, grayImg, 5, 70, 3)
     gray= cv2.Canny(frame, 350,5)
-    # cv2.Smooth(grayImg, grayImg, cv2.CV_GAUSSIAN, 7, 7)
     gray = cv2.GaussianBlur(gray, (3, 3), cv2.BORDER_ISOLATED)
-    # cv2.imshow('Gaussian Blur', gray)
-    # #print(f'GRAY IMG {grayImg}')
-    # cv2.imshow('imagen que le pasa a circles', grayImg)
-    circles = getCircles(gray)
-    # iris.append(resImg)
-    # for circle in circles:
-    #     rad = 
-    #     global radius
-    #     radius = rad
-    #     # cv2.Circle(mask, centroid, rad, cv2.CV_RGB(
-    #     #     255, 255, 255), cv2.CV_FILLED)
-    #     cv2.circle(mask, centroid, rad, (255, 0, 0), 2)
-    #     mask = cv2.bitwise_not(mask)
-    #     # cv2.Sub(frame, copyImg, resImg, mask)
-    #     resImg = cv2.subtract(frame, copyImg, mask)
-    #     x = int(centroid[0] - rad)
-    #     y = int(centroid[1] - rad)
-    #     w = int(rad * 2)
-    #     h = w
-    #     # cv2.SetImageROI(resImg, (x, y, w, h)) ************
-    #     resImg = resImg[y:y+h, x:x+w]
-    #     # cropImg = cv2.CreateImage((w, h), 8, 3)
-    #     cropImg = np.array((w, h), np.uint8)
-    #     cropImg = resImg.copy()  # cv2.Copy(resImg, cropImg)
-    #     # cv2.ResetImageROI(resImg) *******************
-    #     resImg = resImg[y:y-h, x:x-w]
-    #     return(cropImg)
-    return (gray)
+    circles = getCircles(gray)    
+    global radius
+    radius = 72
+    mask = cv2.circle(frame, (384,281), radius, (255, 255, 255), cv2.FILLED)
+    mask = cv2.bitwise_not(mask)
+    return (mask)
 
-def getPolar2CartImg(image):
-	height, width, channels = frame.shape
-	c = (float(height/2.0), float(width/2.0))
-    # c = (381,278)
-    # imgRes = np.zeros((70*3, int(360)), 8, 3)
-	imgRes = cv2.logPolar(image,c,40,cv2.INTER_LINEAR+cv2.WARP_FILL_OUTLIERS)
-	# imgRes = cv2.warpPolar(image,90,c,90,cv2.INTER_LINEAR+cv2.WARP_FILL_OUTLIERS)
-	return (imgRes)
+def getPolar2CartImage(image):
+    height, width = image.shape
+    c = (float(768/2.0), float(562/2.0))
+    imgRes = cv2.warpPolar(image,(height,width),c,260,cv2.INTER_LINEAR+cv2.WARP_POLAR_LOG) #WARP_POLAR_LINEAR
+    imgRes = cv2.addWeighted(imgRes, 1.3, np.zeros(imgRes.shape, imgRes.dtype), 0, 0)
+    return (imgRes)
+
+
 
 frame = cv2.imread("022L_3.png")
-# print(frame)
 iris = copy.copy(frame)
 pupil = getPupil(frame)
-# print(f'FRAME {frame}')
-# print(f'PUPIL {pupil}')
 iris = getIris(pupil)
-polar = getPolar2CartImg(frame)
+cv2.imshow('iris', iris)
+polar = getPolar2CartImage(iris)
 cv2.imshow('polar', polar)
-# cv2.imshow('iris', iris)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
