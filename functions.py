@@ -18,6 +18,7 @@ currentEye = 0
 # Holds the list of eyes (filenames)
 eyesList = []
 umbral = 100000
+eye_percentage_select = 0
 #####################################
 
 def getPupil(frame):
@@ -130,8 +131,9 @@ def select_image():
         print('percentage final', eye_select[1])
         # percentage = similarity_percentage(distance)
         # print('percentage', percentage)
+        eye_percentage_select = eye_select[1]
         final_eye = cv2.imread(get_eye_path(eye_select[0]))
-        cv2.imshow('final', final_eye)
+        # cv2.imshow('final', final_eye)
         #To Pil format
         frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
         frame = Image.fromarray(frame)
@@ -153,9 +155,10 @@ def select_image():
             imageC = tk.Label(image=final)
             imageC.image = final
             imageC.pack(side="right", padx=2, pady=2)
-            mensaje = tk.Text(root,background="white", width=165, height=25)
-            mensaje.pack(padx=0, pady=125)
-            mensaje.insert(tk.INSERT, "Hola Mundo")#text= f'El porcentaje de similitud es de: {eye_select[1]} %'
+            # lbl = tk.Label(text = f'El porcentaje de similitud es de: {eye_percentage_select} %')
+            # lbl.text = f'El porcentaje de similitud es de: {eye_percentage_select} %'
+            # lbl.pack(side = "top", padx="5", pady="5")
+            output.set(f'{eye_percentage_select}%')
         else:
             imageA.configure(image=frame)
             imageB.configure(image=polar)
@@ -168,9 +171,16 @@ root = tk.Tk()
 root.geometry("1500x800")
 imageA = None
 imageB = None
+imageC = None
+output = tk.StringVar()
+
 # create a button, then when pressed, will trigger a file chooser
 # dialog and allow the user to select an input image; then add the
 # button the GUI
+
+lbl = tk.Label(root, text = 'El porcentaje de similitud es de: ')
+lbl.pack()
+out = tk.Entry(root, justify ="center", textvariable= output, state="disabled").pack()
 btn = tk.Button(root, text="Select an image", command= select_image)
 btn.pack(side="bottom", fill="both", expand="yes", padx="5", pady="5")
 # btn.pack(side="bottom", fill="both", expand="yes", padx="10", pady="10")
