@@ -5,7 +5,10 @@ import tkinter as tk
 from PIL import Image
 from PIL import ImageTk
 from tkinter import filedialog
-
+from matplotlib import pyplot as plt
+from scipy.spatial import distance
+import glob
+import os
 # Holds the pupil's center
 centroid = (0, 0)
 # Holds the iris' radius
@@ -14,6 +17,7 @@ radius = 0
 currentEye = 0
 # Holds the list of eyes (filenames)
 eyesList = []
+umbral = 100000
 #####################################
 
 def getPupil(frame):
@@ -73,8 +77,32 @@ def getPolar2CartImage(image):
     imgRes = cv2.addWeighted(imgRes, 1.3, np.zeros(imgRes.shape, imgRes.dtype), 0, 0)
     return (imgRes)
 
+def comparation(image):
+    histImage = cv2.calcHist([image], [0], None, [256], [150, 256])
+    # plt.plot(histImage, color='gray')
+    # plt.show()
+    eyes = []
+    for eye in eyesList:
+        histImageDb = cv2.calcHist([eye[1]], [0], None, [256], [150, 256])
+        result = np.sqrt(np.power((np.subtract(histImage,histImageDb)),2))
+        dst = distance.euclidean(histImage,histImageDb)
+        eyes.append((eye[0],similarity_percentage(dst)))
+    eyes = sorted(eyes, key=lambda x: x[1])
+    eye_select = eyes[len(eyes)-1]
+    return (eye_select)
+
+def similarity_percentage(distance):
+    a = distance / umbral 
+    percentage = (1-a)*100
+    return (round(percentage,2)) 
+
+def get_eye_path(polar_image_path):
+    path = polar_image_path[13:19]
+    return('bd/'+path+'.png')
+
+
 def select_image():
-    global imageA, imageB
+    global imageA, imageB, imageC
     path = filedialog.askopenfilename()
     if len(path) > 0:
         frame = cv2.imread(path)
@@ -82,26 +110,59 @@ def select_image():
         pupil = getPupil(frame)
         iris = getIris(pupil)
         polar = getPolar2CartImage(iris)
+
+        path_bd = 'bd_procesada/*.png'
+        for file in glob.glob(path_bd):
+            img = cv2.imread(file)
+            path = os.path.splitext(file)[0]
+            eyesList.append((path,img))
+        # cv2.imshow('polar', polar)
+   
+        # frame2 = cv2.imread('bd/022R_1.png')
+        # iris2 = copy.copy(frame2)
+        # pupil2 = getPupil(frame2)
+        # # cv2.imshow('pupil', pupil2)
+        # iris2 = getIris(pupil2)
+        # # cv2.imshow('iris', iris2)
+        # polar2 = getPolar2CartImage(iris2)
+        # cv2.imwrite('bd_procesada/022R_1_polar.png', polar2)
+        eye_select = comparation(polar)
+        print('percentage final', eye_select[1])
+        # percentage = similarity_percentage(distance)
+        # print('percentage', percentage)
+        final_eye = cv2.imread(get_eye_path(eye_select[0]))
+        cv2.imshow('final', final_eye)
         #To Pil format
         frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
         frame = Image.fromarray(frame)
         polar = Image.fromarray(polar)
+        final = cv2.cvtColor(final_eye,cv2.COLOR_BGR2RGB)
+        final = Image.fromarray(final)
         #To Imagetk format
         frame = ImageTk.PhotoImage(frame)
         polar = ImageTk.PhotoImage(polar)
-        if imageA is None or imageB is None:
+        final = ImageTk.PhotoImage(final) 
+
+        if imageA is None or imageB is None or imageC is None:
             imageA = tk.Label(image=frame)
             imageA.image = frame
-            imageA.pack(side="left", padx=3, pady=3)
-            imageB = tk.Label(image=polar)
-            imageB.image = polar
-            imageB.pack(side="right", padx=3, pady=3)
+            imageA.pack(side="left", padx=2, pady=2)
+            # imageB = tk.Label(image=polar)
+            # imageB.image = polar
+            # imageB.pack(side="bottom", padx=3, pady=3)
+            imageC = tk.Label(image=final)
+            imageC.image = final
+            imageC.pack(side="right", padx=2, pady=2)
+            mensaje = tk.Text(root,background="white", width=165, height=25)
+            mensaje.pack(padx=0, pady=125)
+            mensaje.insert(tk.INSERT, "Hola Mundo")#text= f'El porcentaje de similitud es de: {eye_select[1]} %'
         else:
             imageA.configure(image=frame)
             imageB.configure(image=polar)
+            imageC.configure(image=final)
             imageA.image = frame
             imageB.image = polar
-
+            imageC.image = final
 
 root = tk.Tk()
 root.geometry("1500x800")
