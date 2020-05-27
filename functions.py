@@ -135,10 +135,13 @@ def select_image():
         final_eye = cv2.imread(get_eye_path(eye_select[0]))
         # cv2.imshow('final', final_eye)
         #To Pil format
-        dimensions = (600,500)
+        dimensions = (500,400)
         frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
         frame = cv2.resize(frame, dsize=dimensions, interpolation=cv2.INTER_CUBIC)
         frame = Image.fromarray(frame)
+        polar = cv2.resize(polar, dsize=(400,400), interpolation=cv2.INTER_CUBIC)
+        polar = polar[0:400, 350:400]
+        polar = cv2.resize(polar, dsize=(100,400), interpolation=cv2.INTER_CUBIC)
         polar = Image.fromarray(polar)
         final = cv2.cvtColor(final_eye,cv2.COLOR_BGR2RGB)
         final = cv2.resize(final, dsize=dimensions, interpolation=cv2.INTER_CUBIC)
@@ -152,22 +155,19 @@ def select_image():
             imageA = tk.Label(image=frame)
             imageA.image = frame
             imageA.pack(side="left", padx=1, pady=1)
-            # imageB = tk.Label(image=polar)
-            # imageB.image = polar
-            # imageB.pack(side="bottom", padx=3, pady=3)
+            imageB = tk.Label(image=polar)
+            imageB.image = polar
+            imageB.pack(side="left", padx=1, pady=1)
             imageC = tk.Label(image=final)
             imageC.image = final
             imageC.pack(side="right", padx=2, pady=2)
-            # lbl = tk.Label(text = f'El porcentaje de similitud es de: {eye_percentage_select} %')
-            # lbl.text = f'El porcentaje de similitud es de: {eye_percentage_select} %'
-            # lbl.pack(side = "top", padx="5", pady="5")
             output.set(f'{eye_percentage_select}%')
         else:
             imageA.configure(image=frame)
-            # imageB.configure(image=polar)
+            imageB.configure(image=polar)
             imageC.configure(image=final)
             imageA.image = frame
-            # imageB.image = polar
+            imageB.image = polar
             imageC.image = final
             output.set(f'{eye_percentage_select}%')
 
