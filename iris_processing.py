@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from scipy.spatial import distance
 import utils as util
-
+import copy
 
 def getPupil(frame):
     dimensions = frame.shape
@@ -15,7 +15,6 @@ def getPupil(frame):
         moments = cv2.moments(i)
         area = moments['m00']
         if ((area > 7000) & (area < 30000)):
-            print('area', area)
             x = moments['m10']/area
             y = moments['m10']/area
             centroid = (int(x), int(y))
@@ -29,7 +28,6 @@ def getCircles(image):
     circles = cv2.HoughCircles(image, cv2.HOUGH_GRADIENT, 1,
                                0.01, param1=250, param2=60, minRadius=0, maxRadius=0)
     detected_circles = np.uint16(np.around(circles))
-    print('detected circles', detected_circles.size)
     for (x, y, r) in detected_circles[0, :]:
         cv2.circle(output, (x, y), r, (0, 255, 0), 3)
         cv2.circle(output, (x, y), 2, (0, 255, 255), 3)

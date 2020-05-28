@@ -58,30 +58,33 @@ def select_image():
         eye_percentage_select = eye_select[1]
         final_eye = cv2.imread(util.get_eye_path(eye_select[0]))
         # cv2.imshow('final', final_eye)
-        # To Pil format
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+       #To Pil format
+        dimensions = (500,400)
+        frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        frame = cv2.resize(frame, dsize=dimensions, interpolation=cv2.INTER_CUBIC)
         frame = Image.fromarray(frame)
+        polar = cv2.resize(polar, dsize=(400,400), interpolation=cv2.INTER_CUBIC)
+        polar = polar[0:400, 350:400]
+        polar = cv2.resize(polar, dsize=(100,400), interpolation=cv2.INTER_CUBIC)
         polar = Image.fromarray(polar)
-        final = cv2.cvtColor(final_eye, cv2.COLOR_BGR2RGB)
+        final = cv2.cvtColor(final_eye,cv2.COLOR_BGR2RGB)
+        final = cv2.resize(final, dsize=dimensions, interpolation=cv2.INTER_CUBIC)
         final = Image.fromarray(final)
-        # To Imagetk format
+        #To Imagetk format
         frame = ImageTk.PhotoImage(frame)
         polar = ImageTk.PhotoImage(polar)
-        final = ImageTk.PhotoImage(final)
+        final = ImageTk.PhotoImage(final) 
 
         if imageA is None or imageB is None or imageC is None:
             imageA = tk.Label(image=frame)
             imageA.image = frame
-            imageA.pack(side="left", padx=2, pady=2)
-            # imageB = tk.Label(image=polar)
-            # imageB.image = polar
-            # imageB.pack(side="bottom", padx=3, pady=3)
+            imageA.pack(side="left", padx=1, pady=1)
+            imageB = tk.Label(image=polar)
+            imageB.image = polar
+            imageB.pack(side="left", padx=1, pady=1)
             imageC = tk.Label(image=final)
             imageC.image = final
             imageC.pack(side="right", padx=2, pady=2)
-            # lbl = tk.Label(text = f'El porcentaje de similitud es de: {eye_percentage_select} %')
-            # lbl.text = f'El porcentaje de similitud es de: {eye_percentage_select} %'
-            # lbl.pack(side = "top", padx="5", pady="5")
             output.set(f'{eye_percentage_select}%')
         else:
             imageA.configure(image=frame)
@@ -90,10 +93,11 @@ def select_image():
             imageA.image = frame
             imageB.image = polar
             imageC.image = final
+            output.set(f'{eye_percentage_select}%')
 
 
 root = tk.Tk()
-root.geometry("1500x800")
+root.geometry("1200x700")
 imageA = None
 imageB = None
 imageC = None
@@ -108,7 +112,7 @@ lbl.pack()
 out = tk.Entry(root, justify="center", textvariable=output,
                state="disabled").pack()
 btn = tk.Button(root, text="Select an image", command=select_image)
-btn.pack(side="bottom", fill="both", expand="yes", padx="5", pady="5")
+btn.pack(side="bottom", fill="both", padx="5", pady="5")
 # btn.pack(side="bottom", fill="both", expand="yes", padx="10", pady="10")
 # kick off the GUI
 root.mainloop()
