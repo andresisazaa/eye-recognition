@@ -34,6 +34,7 @@ def comparation(image):
 def select_image():
     global imageA, imageB, imageC
     path = filedialog.askopenfilename()
+    print('entrada', path)
     if len(path) > 0:
         frame = cv2.imread(path)
         iris = copy.copy(frame)
