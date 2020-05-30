@@ -1,3 +1,10 @@
+'''
+Importanción de librerías
+    OpenCV: Se utiliza para todo el tratamiento de las imagenes
+    Numpy: Es una librería de estructuras de datos n-dimensinales, se utiliza como auxiliar para OpenCV
+    scipy: Se utiliza una función de esta librería para calcular la distancias.
+    Tkinter: Se utiliza para las interfaces gráficas.
+'''
 import cv2
 import numpy as np
 import copy
@@ -18,6 +25,9 @@ path_bd = 'bd_procesada/*.png'
 #####################################
 
 
+'''
+comparation es una función que nos permite comparar los planos cartesianos de cada ojo
+'''
 def comparation(image):
     #Se saca el histograma de la imagen que escogió el usuario
     histImage = cv2.calcHist([image], [0], None, [256], [150, 256])
@@ -35,7 +45,9 @@ def comparation(image):
     eye_select = eyes[len(eyes)-1]
     return (eye_select)
 
-#En este método es para mostrar la interfaz visual y relacionarla con la lógica previamente definida para la idenntificación de irirs
+'''
+En este método es para mostrar la interfaz visual y relacionarla con la lógica previamente definida para la idenntificación de irirs
+'''
 def select_image():
     global imageA, imageB, imageC #Definimos unas variables globales que van a alojar las imágenes que mostraremos en la vista
     path = filedialog.askopenfilename() #le asignamos a la variable path la ruta de la imagés seleccionada por el usuario
@@ -99,7 +111,6 @@ imageA = None
 imageB = None
 imageC = None
 output = tk.StringVar()
-
 
 lbl = tk.Label(root, text='El porcentaje de similitud es de: ')
 lbl.pack()
