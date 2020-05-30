@@ -11,12 +11,10 @@ UdeA 2019-2
 Importanción de librerías
     OpenCV: Se utiliza para todo el tratamiento de las imagenes
     Numpy: Es una librería de estructuras de datos n-dimensinales, se utiliza como auxiliar para OpenCV
-    scipy: Se utiliza una función de esta librería para calcular la distancias.
 '''
 
 import cv2
 import numpy as np
-from scipy.spatial import distance
 import utils as util
 import copy
 
