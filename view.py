@@ -54,9 +54,9 @@ def select_image():
     if len(path) > 0: #Si seleccionaron una imagen entramos a ejecutar los métodos de reconocimiento
         frame = cv2.imread(path) #Asignamos a frame la variable seleccionada
         iris = copy.copy(frame) #Hacemos una copia de la imagen anterior
-        pupil = processing.getPupil(frame) #Obtenemos la pupila del ojo
-        iris = processing.getIris(pupil) #Obtenemos el iris del ojo sin la pupila
-        polar = processing.getPolar2CartImage(iris) # Pasamos el círculo obtenido a coordenadas cartesianas
+        pupil = processing.get_pupil(frame) #Obtenemos la pupila del ojo
+        iris = processing.get_iris(pupil) #Obtenemos el iris del ojo sin la pupila
+        polar = processing.transform_polar2cartesian(iris) # Pasamos el círculo obtenido a coordenadas cartesianas
         #Se hace un ciclo para obtener cada imagen de la base de datos ya previamente procesadas y compararlas con la nueva entrada
         for file in glob.glob(path_bd): 
             img = cv2.imread(file) #se asigna a img la imagen extraida de la base de datos
